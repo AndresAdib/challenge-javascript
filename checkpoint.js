@@ -33,8 +33,14 @@ const {
 // < 16
 
 function exponencial(exp) {
-
+  return function Eleva(num){
+  return num ** exp;
+ }
 }
+
+let sqrt = exponencial(2);
+let e4 = exponencial(4);
+let e3 = exponencial(3);
 
 // ----- Recursión -----
 
@@ -70,7 +76,17 @@ function exponencial(exp) {
 // Aclaraciones: el segundo parametro que recibe la funcion ('direccion') puede ser pasado vacio (null)
 
 function direcciones(laberinto) {
-
+    let dir = '';
+    for(let prop in laberinto){
+        if(typeof laberinto[prop] === 'object'){
+            dir+= prop;
+            return dir + direcciones(laberinto[prop]);
+        }
+        if(laberinto[prop] === 'destino'){
+            return prop;
+        }
+    }
+    return dir;
 }
 
 
@@ -88,7 +104,7 @@ function direcciones(laberinto) {
 // deepEqualArrays([0,1,[[0,1,2],1,2]], [0,1,[[0,1,2],1,2]]) => true
 
 function deepEqualArrays(arr1, arr2) {
-
+    
 }
 
 
@@ -139,7 +155,21 @@ OrderedLinkedList.prototype.print = function(){
 // < 'head --> 5 --> 3 --> 1 --> null'
 //               4
 OrderedLinkedList.prototype.add = function(val){
-    
+   let nuevoNodo = new Node(val);
+    let current = this.head;
+    if(!this.head){ // le pregunta si tiene valor a this.head
+        this.head = nuevoNodo;
+    } else {
+        while(current.next){
+            current = current.next;
+            if(val > current.next){
+                let aux = current.value;
+                current.value = val;
+                val = aux;
+            }
+        }
+        current.next = new Node(val);
+    }
 }
 
 
@@ -159,7 +189,12 @@ OrderedLinkedList.prototype.add = function(val){
 // < null
 
 OrderedLinkedList.prototype.removeHigher = function(){
-    
+    if(!this.head){
+        return null;
+    }
+    let value = this.head.value;
+    this.head = this.head.next;
+    return value;
 }
 
 
@@ -178,8 +213,24 @@ OrderedLinkedList.prototype.removeHigher = function(){
 // > LL.removeHigher()
 // < null
 
-OrderedLinkedList.prototype.removeLower = function(){
-    
+OrderedLinkedList.prototype.removeLower = function(val){
+    val = this.head;
+    if(!val){
+        return null;
+    } 
+    if(!val.next){ //[1]
+        this.head = null;
+        this.length--;
+        return val;
+    }
+    let resultado; // [1,2,3]
+    while(val.next.next){
+        val = val.next;
+    }
+    resultado = val.next;
+    val.next = null;
+    this.length--;
+    return resultado.value;
 }
 
 
@@ -212,7 +263,12 @@ OrderedLinkedList.prototype.removeLower = function(){
 // < ["2-1", "1-1", "1-2", "2-2"];
 
 function multiCallbacks(cbs1, cbs2){
-    
+    let allInOne = [...cbs1, ...cbs2];
+    let results = [];
+
+    allInOne.sort((a , b) => a.time - b.time).forEach((obj) => results.push(obj.cb()));
+
+    return results;
 }
 
 
@@ -231,9 +287,18 @@ function multiCallbacks(cbs1, cbs2){
 // resultado:[5,8,9,32,64]
 
 BinarySearchTree.prototype.toArray = function() {
-    
-}
+    let array = [];
+    if(this.left){
+        array = array.concat(this.left.toArray());
+    }
 
+    array.push(this.value);
+
+    if(this.right){
+        array = array.concat(this.right.toArray());
+    }
+    return array;
+}
 
 
 // ----- Algoritmos -----
